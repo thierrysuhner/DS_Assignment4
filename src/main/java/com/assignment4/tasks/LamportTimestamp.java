@@ -9,14 +9,17 @@ public class LamportTimestamp {
         timestamp = time;
     }
     public synchronized void tick(){
-        // TODO: update the timestamp by 1
+        // Update the timestamp by 1
+        timestamp++;
+
     }
     public synchronized int getCurrentTimestamp(){
         return timestamp;
     }
     public synchronized void updateClock(int receivedTimestamp){
-        // TODO: update the function to choose the higher value out of the two received timestamps
-        timestamp = receivedTimestamp;
+        // update the function to choose the higher value out of the two received timestamps
+        if (receivedTimestamp > timestamp) { timestamp = receivedTimestamp; }
+        tick(); // tick on receive
     }
 
 }

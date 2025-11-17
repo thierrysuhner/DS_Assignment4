@@ -31,12 +31,14 @@ public class UdpLTClient {
     Thread receiverThread = new Thread(client);
     receiverThread.start();
 
-    // TODO: This should not be counted as a message event, so the clock should not tick
-    String joinMessage = "message:timestamp:id";
+    String joinMessage = "Join:" + lc.getCurrentTimestamp() + ":" + id;
 
-    // TODO: Send an initial "join" message to notify the other clients that a new one has connected
+    //Send an initial "join" message to notify the other clients that a new one has connected
+    sendData = joinMessage.getBytes();
+    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
 
-    //TODO: Send the packet to the server
+    //Send the packet to the server
+    clientSocket.send(sendPacket);
 
     // Prompt the user to enter messages
     System.out.println("[Client " + id + "] Enter any message:");
@@ -56,18 +58,20 @@ public class UdpLTClient {
 
         if (!messageBody.isEmpty()) {
 
-          //TODO: Increment the Lamport clock for the message event
+          //Increment the Lamport clock for the message event
+          lc.tick();
 
-          //TODO: Get the updated timestamp and prepare the message to send
+          //Get the updated timestamp and prepare the message to send
+          int updatedTimestamp = lc.getCurrentTimestamp();
+          String responseMessage = messageBody + ":" + updatedTimestamp + ":" + id;
+          sendData = responseMessage.getBytes();
+          DatagramPacket responsePacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
 
-          String responseMessage = null;
-
-          // TODO: Send the message to the server
-
-
+          //Send the message to the server
+          clientSocket.send(responsePacket);
 
           // Print the sent message along with its timestamp
-          System.out.println("Sent message: " + messageBody + ":" + "with timestamp:");
+          System.out.println("Sent message: " + messageBody + ":" + updatedTimestamp);
         }
       } catch (Exception e) {
         e.printStackTrace();

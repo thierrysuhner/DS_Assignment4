@@ -18,13 +18,39 @@ public class LTClientThread implements Runnable {
 
   @Override
   public void run() {
-    // TODO:
-    // Write your code here to continuously listen for incoming messages from the server and display them.
-    // Make use of the Datagram sockets and functions in Java https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html
-    System.out.println("Client 3: Hello World!:1");
+    // Continuously listen for incoming messages from the server
+    while (true) {
+      try {
+        // Prepare packet for receiving
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
-    // TODO:
-    // Update the clock based on the timestamp received from the server.
-    System.out.println("Current clock: 2");
+        // Block until a packet arrives
+        clientSocket.receive(receivePacket);
+
+        // Convert bytes -> string
+        String msg = new String(receivePacket.getData(), 0, receivePacket.getLength());
+
+        // Parse the message: expected format: "message:timestamp:id"
+        String[] parts = msg.split(":");
+        if (parts.length == 3) {
+          String messageText = parts[0];
+          int receivedTimestamp = Integer.parseInt(parts[1]);
+          int senderId = Integer.parseInt(parts[2]);
+
+          // Print received message
+          if (messageText.equals("Join")) { messageText = "User " + senderId + " has connected!"; }
+          System.out.println("Client" + senderId + ": " + messageText + ":" + receivedTimestamp);
+
+          // Update the clock based on the timestamp received from the server
+          // Do not update timestamp if message was just "join"
+          if (!messageText.equals("Join")) { lc.updateClock(receivedTimestamp); }
+          System.out.println("Current clock: " + lc.getCurrentTimestamp());
+        } else {
+          System.out.println("Malformed message received: " + msg);
+        }
+      } catch (IOException e) {
+        System.err.println("Error receiving message: " + e.getMessage());
+      }
+    }
   }
 }
