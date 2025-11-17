@@ -42,8 +42,6 @@ public class LTClientThread implements Runnable {
           System.out.println("Client" + senderId + ": " + messageText + ":" + receivedTimestamp);
 
           // Update the clock based on the timestamp received from the server
-          // Do not update timestamp if message was just "join"
-          if (!messageText.equals("Join")) { lc.updateClock(receivedTimestamp); }
           System.out.println("Current clock: " + lc.getCurrentTimestamp());
         } else {
           System.out.println("Malformed message received: " + msg);
