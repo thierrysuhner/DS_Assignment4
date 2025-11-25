@@ -27,13 +27,16 @@ public class UdpVectorClient {
     Thread receiverThread = new Thread(clientReceiver);
     receiverThread.start();
 
-    // TODO: This should not be counted as a message event, so the clock should not tick
+    String joinMessage = "Join:" + vcl.showClock() + ":" + id;
 
-    String joinMessage = "message:timestamp:id";
 
-    //TODO: Send an initial "join" message to notify the other clients that a new one has connected
+    //Send an initial "join" message to notify the other clients that a new one has connected
+    byte[] sendData;
+    sendData = joinMessage.getBytes();
+    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
 
-   // TODO: Send the packet to the server
+    //Send the packet to the server
+    clientSocket.send(sendPacket);
 
     // Prompt the user to start entering messages
     System.out.println("[" + id + "] Enter any message:");
@@ -50,11 +53,22 @@ public class UdpVectorClient {
           System.exit(0); // Exit the program
         }
         
-        // TODO: Increment the vector clock for the client's process
+        //Increment the vector clock for the client's process
         // The clock should NOT tick if the message to send is "history" (for Task 2.2)
-        
-        // TODO: Prepare the message with the updated vector clock and client ID and send it to the server
-        String responseMessage = "message:timestamp:id";
+
+          if (!messageBody.equalsIgnoreCase("history")) {
+              vcl.tick(id-1);
+          }
+
+        //Prepare the message with the updated vector clock and client ID and send it to the server
+        String updatedVectorClock = vcl.showClock();
+        String responseMessage = messageBody + ":" + updatedVectorClock + ":" + id;
+        sendData = responseMessage.getBytes();
+        DatagramPacket responsePacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
+
+        //Send the message to the server
+        clientSocket.send(responsePacket);
+
         System.out.println("Sent message: " + responseMessage);
         System.out.println("Current clock: " + vcl.showClock());
       }

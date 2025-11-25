@@ -39,7 +39,19 @@ public class VectorClock {
   // For Task 2.2
   // Check if a message can be delivered or has to be buffered
   public synchronized boolean checkAcceptMessage(int senderId, VectorClock senderClock) {
-    boolean acceptMessage = true;
-    return acceptMessage;
+    int id = senderId - 1;
+    int senderTime = senderClock.getCurrentTimestamp(id);
+    int localTime = this.timestamps[id];
+
+    if (localTime + 1 != senderTime) {
+        return false;
+    }
+
+    for (int k = 0; k < timestamps.length; k++) {
+        if (k != id && senderClock.getCurrentTimestamp(k) > this.timestamps[k]) {
+            return false;
+        }
+    }
+    return true;
   }
 }
