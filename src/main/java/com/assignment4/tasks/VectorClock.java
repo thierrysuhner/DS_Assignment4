@@ -12,7 +12,7 @@ public class VectorClock {
   }
 
   public synchronized void setVectorClock(int processId, int time) {
-    //Set the vector clock value for the processId
+    // Set the vector clock value for the processId
     timestamps[processId] = time;
   }
 
@@ -35,7 +35,6 @@ public class VectorClock {
     return Arrays.toString(timestamps);
   }
 
-  // TODO:
   // For Task 2.2
   // Check if a message can be delivered or has to be buffered
   public synchronized boolean checkAcceptMessage(int senderId, VectorClock senderClock) {

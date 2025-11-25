@@ -46,6 +46,7 @@ public class VectorClientThread implements Runnable {
                   String[] receivedTimestamps = parts[1].replaceAll("[\\[\\]]", "").split(",\\s*");
                   int senderId = Integer.parseInt(parts[2]);
 
+                  // Create vector clock object and add values
                   VectorClock receivedClock = new VectorClock(receivedTimestamps.length);
                   for (int i = 0; i < receivedTimestamps.length; i++) {
                       receivedClock.setVectorClock(i, Integer.parseInt(receivedTimestamps[i]));
@@ -59,6 +60,7 @@ public class VectorClientThread implements Runnable {
                       continue;
                   }
 
+                  // Check if message needs to be buffered or if its accepted
                   if (vcl.checkAcceptMessage(senderId,receivedClock)) {
                       // Print received message
                       displayMessage(receivedMessage);
