@@ -2,6 +2,8 @@ Assignment 4
 ------------
 
 # Team Members
+- Thierry Suhner
+- Karla Ruggaber
 
 # GitHub link to your (forked) repository (if submitting through GitHub)
 
